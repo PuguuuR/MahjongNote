@@ -1,30 +1,25 @@
 //点棒データを入力し、ポイント計算するためのサービス
 onsModule.factory('MjPointService', function() {
   return {
-    //点棒リストからポイントリストを返す(点棒リスト,ウマ,返し点)
-    getMjPoint: function(handPtList,umaPtList,returnPt) {
+    //点棒リストからポイントリストを返す(点棒リスト,返し点)
+    getOriginPoint: function(handPtList,returnPt,plList) {
       var sorted = handPtList.slice().sort(function(a, b) {return b - a});//持ち点を昇順に並び替え
       var ranks = handPtList.slice().map(function(x){return sorted.indexOf(x) + 1});//順位リストを作成
-      var pointMjList = [];//
+      var pointMjList = [];//{originPt,rank,player}
 
-      //同点のプレイヤーがいるかチェック
-      if(checkListValid(ranks)) {
-        return;
-      } else {
-        for(var i=0;i<4;i++) {
-          var rank = ranks[i];//順位
-          var uma = umaPtList[rank - 1];//順位ウマ
-          var mjPoint;//最終ポイント
-          if(rank == 1) {
-            //1位の場合はオカを加える
-            mjPoint = ((handPtList[i] - returnPt) / 10) + uma + 20;//最終ポイント
-          } else {
-            mjPoint = ((handPtList[i] - returnPt) / 10) + uma;//最終ポイント
-          }
-          pointMjList.push(mjPoint);//最終ポイントをリストに格納
-        }
-        return pointMjList;
+      for(var i=0;i<4;i++) {
+        var mjList = {};//プレイヤーごとの素点と順位リスト
+        var rank = ranks[i];//順位
+        var mjPoint;//最終ポイント
+        var player = plList[i];//プレイヤー名
+
+        mjPoint = ((handPtList[i] - returnPt) / 10);//最終ポイント
+        mjList['originPt'] = mjPoint;
+        mjList['rank'] = rank;
+        mjList['player'] = player;
+        pointMjList.push(mjList);//最終ポイントをリストに格納
       }
+      return pointMjList;
     },
 
       //プレイヤー選択の重複チェック(true:重複あり)

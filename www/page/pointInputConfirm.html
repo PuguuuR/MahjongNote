@@ -1,0 +1,25 @@
+<ons-page ng-controller="InputConfirmCtrl as inputConCl">
+    <ons-toolbar>
+      <div class="left" ng-click="inputConCl.back()">
+        <ons-toolbar-button>
+          <ons-icon icon="ion-close-round" fixed-width="false" style="font-size: 26px; vertical-align: -4px"></ons-icon>
+        </ons-toolbar-button>
+      </div>
+      <div class="center">点棒入力確認</div>
+    </ons-toolbar>
+
+    <div class="content" style="margin: 10px;">
+      <ons-row>
+        <ons-col width="50%">プレイヤー</ons-col>
+        <ons-col width="20%">素点</ons-col>
+        <ons-col width="20%">順位</ons-col>
+      </ons-row>
+      <ons-row ng-repeat="data in inputConCl.pointData">
+        <ons-col width="50%">{{data.player}}</ons-col>
+        <ons-col width="20%">{{data.originPt}}</ons-col>
+        <ons-col width="20%">{{data.rank}}</ons-col>
+      </ons-row>
+      <br>
+      <ons-button ng-click="inputConCl.pointInputComplete()">登録完了</ons-button>
+    </div>
+</ons-page>

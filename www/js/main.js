@@ -42,17 +42,10 @@ onsModule.controller('InputCtrl', function(MjPointService,ShareDataService) {
           handPtList.push(this.point2);
           handPtList.push(this.point3);
           handPtList.push(this.point4);
-          var resultList = MjPointService.getMjPoint(handPtList,umaPtList,returnPt);//持ち点からPtを計算
-          if (resultList == null) {
-            //nullの場合は同点あり
-            ons.notification.alert({
-              message: '同点のプレイヤーがいます',
-              title: 'エラーだよ'
-            });
-          } else {
-            ShareDataService.createPointList(resultList,selectPlList);//保存データに結果表示用のPtリストを保存する
-            mainNavigator.pushPage('page/resultList.html');
-          }
+          var resultList = MjPointService.getOriginPoint(handPtList,returnPt,selectPlList);//持ち点から素点と順位を計算
+          console.log("【mainjs/inputControl/resultList】");//ログ
+          console.log(resultList);//ログ
+          mainNavigator.pushPage('page/pointInputConfirm.html',{data: resultList});
         }
       } else {
         ons.notification.alert({
@@ -71,13 +64,34 @@ onsModule.controller('InputCtrl', function(MjPointService,ShareDataService) {
       mainNavigator.pushPage('page/playerSetting.html');//プレイヤー設定画面に遷移
     }
   })
+
+  //点棒入力確認画面のコントローラー
+onsModule.controller('InputConfirmCtrl', function($scope,MjPointService,ShareDataService) {
+  var resultList = $scope.mainNavigator.topPage.data;//前画面の入力情報を引き継ぐ{originPt,rank,player}
+  this.pointData = resultList;
+  //トップへ戻るボタン
+  this.back = function(){
+    mainNavigator.popPage();
+  }
+
+  //登録完了ボタン
+  this.pointInputComplete = function() {
+    ShareDataService.createPointList(resultList);//保存データに結果表示用のPtリストを保存する
+    mainNavigator.pushPage('page/resultList.html');//集計画面に遷移
+  }
+})
   
   //トップページのコントローラー
 onsModule.controller('topCtrl', function() {
-    this.gameStart = function(){
-        mainNavigator.pushPage('page/resultList.html');//集計画面に遷移
-    }
-  })
+  this.gameStart = function(){
+      mainNavigator.pushPage('page/resultList.html');//集計画面に遷移
+  }
+})
+
+  //トップページのコントローラー
+onsModule.controller('Ctrl', function() {
+  
+})
   
   //集計画面のコントローラー
 onsModule.controller('ResultCtrl', function(ShowService,ShareDataService) {
@@ -93,15 +107,20 @@ onsModule.controller('ResultCtrl', function(ShowService,ShareDataService) {
     //shareDataサービスから保持しているデータを取ってくる
     var plList = ShareDataService.getPlList();
     var pointList = ShareDataService.getPtList();
-
+    console.log("【mainjs/ResultControl/pointList】");//ログ
+    console.log(pointList);//ログ
     this.testList = ShowService.getPointList(plList,pointList);//表示用データを作成し、Viewへバインド
-
+  
     this.pointInput = function(){
       mainNavigator.pushPage('page/pointInput.html');//点棒入力画面に遷移
     }
 
     this.playerSetting = function() {
       mainNavigator.pushPage('page/playerSetting.html');//プレイヤー設定画面に遷移
+    }
+
+    this.Setting = function() {
+      mainNavigator.pushPage('page/test.html');//プレイヤー設定画面に遷移
     }
   })
 

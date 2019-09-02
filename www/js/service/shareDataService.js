@@ -1,7 +1,9 @@
 //データ保持用のサービス
 onsModule.factory('ShareDataService', function() {
-  var plList = ["プレイヤー1","プレイヤー2","プレイヤー3","プレイヤー4","プレイヤー5"];
-  var pointList = [];
+  var plList = [{plId:"1",plName:"プレイヤー1"},{plId:"2",plName:"プレイヤー2"},{plId:"3",plName:"プレイヤー3"},{plId:"4",plName:"プレイヤー4"},{plId:"5",plName:"プレイヤー5"}];
+  var pointList = [];//全得点リスト
+  var keyPlayer = 'player';
+  var keyPoint = 'point';
 
   return {
     //プレイヤー一覧を返す
@@ -13,14 +15,29 @@ onsModule.factory('ShareDataService', function() {
     getPtList: function() {
       return pointList;
     },
-    
-    //点棒一覧とプレイヤー選択から得点リストを作成する
-    createPointList: function(resultList,selectPlayerList) {
-      var thisGamePointList = {};
-      for(var i=0; i < resultList.length; i++) {
-        thisGamePointList[selectPlayerList[i]] = resultList[i];//順番にキー：プレイヤー名、値：ポイントを格納
+
+    //プレイヤー名を返す（引数:プレイヤーID）
+    getPlName(plId) {
+      for(var i=0;i<plList.length;i++) {
+        player = plList[i];
+        if(player['plId'] == plId) {
+          return player['plName'];
+        }
       }
-      pointList.push(thisGamePointList);
+      return null;
+    },
+
+    //点棒一覧とプレイヤー選択から得点リストを作成する
+    createPointList: function(resultList) {
+      var thisResultList = [];//本ゲームの得点リスト
+      for(var i=0; i < resultList.length; i++) {
+        var thisGamePointList = {};
+        //順番にプレイヤー名、ポイントを格納
+        thisGamePointList[keyPlayer] = resultList[i].player;
+        thisGamePointList[keyPoint] = resultList[i].originPt;
+        thisResultList.push(thisGamePointList);
+      }
+      pointList.push(thisResultList);//全得点リストに本ゲーム得点リストを格納
     },
 
     //プレイヤー名を更新し、結果コードを返す(0:Success, -1:Fail)
